@@ -1,0 +1,5 @@
+streamlit
+textblob
+nltk
+pandas
+requests
