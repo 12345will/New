@@ -1,4 +1,3 @@
-from utils import search_articles, assess_article
 import requests
 from textblob import TextBlob
 import nltk
