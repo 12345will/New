@@ -14,7 +14,42 @@ except LookupError:
 
 # --- Risk Keywords ---
 risk_keywords = {
-    # ... (same as before; copy your full dictionary here)
+    "labor": {
+        "child labor": 3, "forced labor": 3, "bonded labor": 3, "modern slavery": 3,
+        "human trafficking": 3, "unsafe working conditions": 2, "low wages": 1,
+        "wage theft": 2, "long working hours": 1, "long hours": 1,
+        "no union": 1, "union suppression": 2, "anti-union practices": 2,
+        "worker abuse": 2, "discrimination": 1, "gender-based violence": 2,
+        "sexual harassment": 2, "exploitation": 2, "labor violations": 2,
+        "migrant worker abuse": 2, "hazardous working conditions": 2,
+        "worker deaths": 3, "occupational hazard": 2, "factory collapse": 3,
+        "temporary contracts": 1, "unpaid overtime": 2, "lack of health insurance": 1,
+        "retaliation": 2
+    },
+    "environment": {
+        "pollution": 2, "air pollution": 2, "water pollution": 2, "soil contamination": 2,
+        "deforestation": 3, "biodiversity loss": 3, "habitat destruction": 3,
+        "water contamination": 2, "toxic waste": 3, "oil spill": 3, "chemical spill": 2,
+        "emissions violation": 2, "illegal logging": 3, "ecosystem destruction": 3,
+        "environmental damage": 2, "climate impact": 2, "greenhouse gas emissions": 2,
+        "carbon emissions": 2, "methane emissions": 2, "illegal dumping": 2,
+        "waste mismanagement": 1, "overconsumption": 1, "excessive packaging": 1,
+        "resource depletion": 2, "water overuse": 2, "tailings dam": 3,
+        "dam collapse": 3, "brumadinho": 3, "toxic sludge": 3,
+        "mining disaster": 3, "environmental catastrophe": 3, "negative impact": 3
+    },
+    "governance": {
+        "sanctions": 2, "fraud": 3, "accounting fraud": 3, "corruption": 3,
+        "bribery": 3, "embezzlement": 3, "money laundering": 3,
+        "regulatory violation": 2, "fines": 1, "illegal practices": 2,
+        "lack of transparency": 2, "governance failure": 2,
+        "whistleblower retaliation": 2, "non-compliance": 2,
+        "anti-competitive behavior": 2, "insider trading": 2,
+        "misleading reporting": 2, "data breach": 2, "privacy violation": 2,
+        "cybersecurity failure": 2, "board conflicts of interest": 2,
+        "lawsuit": 2, "settlement": 2, "criminal charges": 3,
+        "investigation": 2, "stock manipulation": 3
+    }
 }
 
 def get_full_text(url):
@@ -31,6 +66,7 @@ def get_full_text(url):
         return f"[Error extracting article text: {e}]"
 
 def assess_article(title, snippet, url, weights):
+    # Guard clause to ensure correct keys are present
     required_keys = {"labor", "environment", "governance"}
     if not required_keys.issubset(weights):
         raise ValueError(f"Missing required weight keys: {required_keys - set(weights)}")
@@ -39,7 +75,7 @@ def assess_article(title, snippet, url, weights):
     combined_text = f"{title} {snippet} {full_text}".lower()
     sentiment = TextBlob(combined_text).sentiment.polarity
     risk_scores = {k: 0 for k in risk_keywords}
-    
+
     for category, terms in risk_keywords.items():
         for kw, severity in terms.items():
             if kw in combined_text:
