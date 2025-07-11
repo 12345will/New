@@ -31,19 +31,26 @@ def get_full_text(url):
         return f"[Error extracting article text: {e}]"
 
 def assess_article(title, snippet, url, weights):
+    required_keys = {"labor", "environment", "governance"}
+    if not required_keys.issubset(weights):
+        raise ValueError(f"Missing required weight keys: {required_keys - set(weights)}")
+
     full_text = get_full_text(url)
     combined_text = f"{title} {snippet} {full_text}".lower()
     sentiment = TextBlob(combined_text).sentiment.polarity
     risk_scores = {k: 0 for k in risk_keywords}
+    
     for category, terms in risk_keywords.items():
         for kw, severity in terms.items():
             if kw in combined_text:
                 risk_scores[category] += severity
+
     weighted_score = (
-    risk_scores["labor"] * weights.get("labor", 0) +
-    risk_scores["environment"] * weights.get("environment", 0) +
-    risk_scores["governance"] * weights.get("governance", 0)
-) / 100
+        risk_scores["labor"] * weights["labor"] +
+        risk_scores["environment"] * weights["environment"] +
+        risk_scores["governance"] * weights["governance"]
+    ) / 100
+
     return {
         "Labor Risk": risk_scores["labor"],
         "Environmental Risk": risk_scores["environment"],
