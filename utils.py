@@ -40,10 +40,10 @@ def assess_article(title, snippet, url, weights):
             if kw in combined_text:
                 risk_scores[category] += severity
     weighted_score = (
-        risk_scores["labor"] * weights["labor"] +
-        risk_scores["environment"] * weights["environment"] +
-        risk_scores["governance"] * weights["governance"]
-    ) / 100
+    risk_scores["labor"] * weights.get("labor", 0) +
+    risk_scores["environment"] * weights.get("environment", 0) +
+    risk_scores["governance"] * weights.get("governance", 0)
+) / 100
     return {
         "Labor Risk": risk_scores["labor"],
         "Environmental Risk": risk_scores["environment"],
